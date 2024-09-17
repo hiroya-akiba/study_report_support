@@ -7,6 +7,14 @@
 </head>
 <body>
 <h1>Study Report Support</h1>
-
+{% if latest_report_list %}
+    <ul>
+    {% for report in latest_report_list %}
+        <li><a href="/report/{{ report.id }}">{{ report.subject }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p> No Reports are available.</p>
+{% endif %}
 </body>
 </html>

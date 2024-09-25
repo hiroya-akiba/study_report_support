@@ -8,15 +8,26 @@
 <body>
 <h1>Study Report Support</h1>
 {% if latest_report_list %}
-    <ul>
+<table>
+    <tr>
+        <th>作成日時</th>
+        <th>作成レポート</th>
+        <th></th>
+    </tr>
     {% for report in latest_report_list %}
-        <li><a href="/report/{{ report.id }}">{{ report.subject }}</a></li>
+    <tr>
+        <td>{{ report.create_time }}</td>
+        <td>{{ report.subject }}</td>
+        <td><a href="/report/{{ report.id }}">編集する</a></td>
+    </tr>
     {% endfor %}
-    </ul>
+</table>
+
 {% else %}
     <p> No Reports are available.</p>
 {% endif %}
 <br>
-<a href="{% url 'srs:create'%}">レポート作成</a>
+<a href="{% url 'srs:createReport'%}">レポート作成</a>
+<a href="{% url 'srs:createSubject'%}">科目作成</a>
 </body>
 </html>

@@ -7,10 +7,16 @@ class User(models.Model):
     is_admin = models.BooleanField(default=False)
     create_time = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return self.user_name
+
 class Subject(models.Model):
     subject_name = models.CharField(max_length=20)
     create_time = models.DateTimeField(default=timezone.now)
     update_time = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.subject_name
 
 class Report(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
@@ -18,4 +24,7 @@ class Report(models.Model):
     create_time = models.DateTimeField(default=timezone.now)
     update_time = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        ret = self.subject.subject_name + '|' + str(self.create_time)
+        return ret
 

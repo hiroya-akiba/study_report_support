@@ -1,60 +1,41 @@
 from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
-from django.template import loader
-from django.urls import reverse
-from django.views.generic import TemplateView
-from .models import Report, Subject
-from .forms import ReportForm, SubjectForm
+from django.urls import reverse_lazy
+from django.views.generic import \
+    ListView, DetailView, CreateView, UpdateView, DeleteView
+
+from .models import Report
+from .forms import ReportForm
+
+class ReportListview(ListView):
+    """
+    レポートを一覧表示する
+    テンプレートは指定しない場合、モデル名_list.htmlが使われる
+    """
+    template_name = "study_report_support/index.html"
+    model = Report
+    paginate_by = 10
 
 
-class SrsIndexView(TemplateView):
-    template_name = './study_report_support/index.html'
-
-    # *argsはタプル型で、**kwargsは辞書型で引数を受け取る
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs): # request変数が引数に入っていないので、使えないように思えるが、
-        # viewのインスタンス変数についているので、問題なく使うことができる。
-        latest_report_list = Report.objects.order_by('create_time')[:5]
-        context = super().get_context_data(**kwargs) # 親のcontext_dataをインスタンス化する。
-        context['latest_report_list'] = latest_report_list # 独自のコンテキスト情報を設定する。
-        return context # DB情報を取得するなどの動的なコンテキストを設定する場合は、このように継承して使用する。
-
-index = SrsIndexView.as_view()
+class ReportDetailView(DetailView):
+    """
+    レポートを詳細表示する
+    モデル名_detail.htmlが使用される
+    """
+    model = Report
 
 
-#def index(request):
-#    # create_dateカラムから5行分
-#    latest_report_list = Report.objects.order_by('create_time')[:5]
-#    #for in で1行ずつ latestreport を出力して , で繋げる
-#    # output = ','.join([rep.subject for rep in latest_report_list])
-#    # return HttpResponse(output)
-#    template = loader.get_template('study_report_support/index.html')
-#    context = {
-#        'latest_report_list' : latest_report_list,
-#    }
-#    return HttpResponse(template.render(context, request))
+class ReportCreateView(CreateView):
+    """
+    レポートを新規作成する
+    django.contriv.messagesを使用するとPRGが使える
+    """
+    model = Report
+    form_class = ReportForm
+    success_url = reverse_lazy('srs:index')
 
-def create(request):
-    if request.method == 'POST':
-        rf = ReportForm(request.POST)
-        if rf.is_valid():
-            rf.save()
-        context = {}
-        url = 'study_report_support/index.html'
-    else :
-        if 'create_report' in request.path_info :
-            rf = ReportForm()
-            url = 'study_report_support/createReport.html'
-            context = {
-                'reportForm' : rf,
-            }
-        elif 'create_subject' in request.path_info :
-            sf = SubjectForm()
-            url = 'study_report_support/createSubject.html'
-            context = {
-                'subjectForm' : sf,
-            }
-    return render(request, url, context)
+    def from_valid(self, form):
+        result = super().form_valid(form)
+        messages.success(
+            self.request, '「{}」を作成しました'.format(form.instance)
+        )
+        return result

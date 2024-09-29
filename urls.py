@@ -22,4 +22,8 @@ urlpatterns = [
     path('create_subject/',
         views.SubjectCreateView.as_view(),
         name='create_subject'),
+
+    path('dash_board/',
+         views.DashBoardView.as_view(),
+         name='dash_board'),
 ]

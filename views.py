@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import \
     ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
-
+    
 from .models import Report, Subject
 from .forms import ReportForm, SubjectForm
 from .myplot import line_charts, bar
@@ -19,8 +19,9 @@ class DashBoardView(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['subject_list'] = Subject.objects.all
-        context["plot"] = bar()
+        context["plot"] = bar(7)
         return context
+
 
 
 class ReportListview(ListView):

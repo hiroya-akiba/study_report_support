@@ -5,7 +5,7 @@ from django.views.generic import \
     
 from .models import Report, Subject
 from .forms import ReportForm, SubjectForm
-from .myplot import line_charts, bar
+from .myplot import UsePlotly
 
 
 
@@ -15,11 +15,12 @@ class DashBoardView(TemplateView):
     """
     template_name = "study_report_support/dashboard.html"
     model = Report
+    plot_obj = UsePlotly
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['subject_list'] = Subject.objects.all
-        context["plot"] = bar(7)
+        context["plot"] = self.plot_obj.bar(7)
         return context
 
 

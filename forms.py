@@ -16,9 +16,9 @@ class ReportForm(ModelForm):
             'time':'時間',
         }
 
-        widgets = {
-            "subject": Textarea(attrs={'cols':30, 'rows':1})
-        }
+        #widgets = {
+        #    "subject": Textarea(attrs={'cols':30, 'rows':1})
+        #}
 
 class SubjectForm(ModelForm):
     class Meta:

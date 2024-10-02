@@ -7,27 +7,45 @@
 </head>
 <body>
 <h1>Study Report Support</h1>
-{% if latest_report_list %}
-<table>
-    <tr>
-        <th>作成日時</th>
-        <th>作成レポート</th>
-        <th></th>
-    </tr>
-    {% for report in latest_report_list %}
-    <tr>
-        <td>{{ report.create_time }}</td>
-        <td>{{ report.subject }}</td>
-        <td><a href="/report/{{ report.id }}">編集する</a></td>
-    </tr>
-    {% endfor %}
-</table>
 
-{% else %}
-    <p> No Reports are available.</p>
-{% endif %}
-<br>
-<a href="{% url 'srs:createReport'%}">レポート作成</a>
-<a href="{% url 'srs:createSubject'%}">科目作成</a>
+<div style="margin: 10px;">
+    <table border>
+        <tr>
+            <th>作成日時</th>
+            <th>作成レポート</th>
+            <th></th>
+        </tr>
+        {% for report in object_list %}
+        <tr>
+            <td>{{ report.create_time }}</td>
+            <td>{{ report.subject }}</td>
+            <td><a href="{% url 'srs:detail_report' report.id %}">詳細</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td>レポートは存在しません。</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div style="margin: 10px;"></div>
+    <a href="{% url 'srs:dash_board' %}">ダッシュボード</a>
+    <a href="{% url 'srs:create_report' %}">レポート作成</a>
+    <a href="{% url 'srs:create_subject' %}">科目作成</a>
+</div>
+
+<div>
+    <table border style="margin: 10px;">
+        <tr>
+            <th>科目</th>
+        </tr>
+        {% for subject in subject_list %}
+        <tr>
+            <td>{{ subject.subject_name }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 </body>
 </html>

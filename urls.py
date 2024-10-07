@@ -8,8 +8,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('',
-        views.ReportListview.as_view(),
-        name='index'),
+         views.DashBoardView.as_view(),
+         name='dash_board'),
 
     path('report/<pk>/',
         views.ReportDetailView.as_view(),
@@ -22,8 +22,4 @@ urlpatterns = [
     path('create_subject/',
         views.SubjectCreateView.as_view(),
         name='create_subject'),
-
-    path('dash_board/',
-         views.DashBoardView.as_view(),
-         name='dash_board'),
 ]

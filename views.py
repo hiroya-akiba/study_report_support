@@ -1,11 +1,13 @@
 from django.contrib import messages
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import \
     ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
-    
+import json
+
 from .models import Report, Subject
 from .forms import ReportForm, SubjectForm
-from .myplot import UsePlotly
+from .myplot import UsePlotly, UseMatplotlib
 
 
 
@@ -15,14 +17,21 @@ class DashBoardView(TemplateView):
     """
     template_name = "study_report_support/dashboard.html"
     model = Report
-    plot_obj = UsePlotly
+    #plot_obj = UsePlotly
+    plot_obj = UseMatplotlib()
+    plot_obj.create_graph()
+
+    def post(self, request):
+        data = json.loads(request.body)
+        print(f"Received data: {data}")
+        return JsonResponse({'status': 'success'})
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['subject_list'] = Subject.objects.all
-        context["plot"] = self.plot_obj.bar(7)
+        #context["plot"] = self.plot_obj.bar(7)
+        context["plot"] = self.plot_obj.get_image()
         return context
-
 
 
 class ReportListview(ListView):
@@ -59,7 +68,7 @@ class ReportCreateView(CreateView):
     template_name = "study_report_support/createReport.html"
     model = Report
     form_class = ReportForm
-    success_url = reverse_lazy('srs:index')
+    success_url = reverse_lazy('srs:dash_board')
 
     def from_valid(self, form):
         result = super().form_valid(form)
@@ -77,7 +86,7 @@ class SubjectCreateView(CreateView):
     template_name = "study_report_support/createSubject.html"
     model = Subject
     form_class = SubjectForm
-    success_url = reverse_lazy('srs:index')
+    success_url = reverse_lazy('srs:dash_board')
 
     def from_valid(self, form):
         result = super().form_valid(form)
@@ -94,7 +103,7 @@ class ReportUpdateview(UpdateView):
     """
     model = Report
     form_class = ReportForm
-    success_url = reverse_lazy('srs:index')
+    success_url = reverse_lazy('srs:dash_board')
 
     def form_valid(self, form):
         result = super().form_valid(form)
@@ -112,7 +121,7 @@ class ReportDeleteView(DeleteView):
     """
     model = Report
     form_class = ReportForm
-    success_url = reverse_lazy('srs:index')
+    success_url = reverse_lazy('srs:dash_board')
 
     def delete(self, request, *args, **kwargs):
         result = super().delete(request, *args, **kwargs)

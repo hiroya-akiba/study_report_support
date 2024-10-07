@@ -8,6 +8,49 @@
 </head>
 <body>
 <h1>Dashboard</h1>
-    <div class="graph">{{plot|safe}}</div>
+<!--<div class="graph">{{plot|safe}}</div>-->
+
+<img id="plot" src="data:image/png;base64, {{ plot | safe }} " alt="matplotlib_plot" style="cursor: pointer;">
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const plot = document.getElementById('plot');
+        
+        plot.addEventListener('click', function(event) {
+            const rect = plot.getBoundingClientRect();
+            const x    = event.clientX - rect.left; // クリックしたx座標
+            const y    = event.clientY - rect.top;  // クリックしたy座標
+
+            fetch('{% url "srs:dash_board" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'X-CSRFToken': '{{ csrf_token }}'  // csrf_tokenを送らないと403エラーが返る
+                },
+                body : JSON.stringify({ 'x': x, 'y': y})
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Network response was missing.')
+                }
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+
+</script>
+
+<div style="margin: 10px;"></div>
+    <a href="{% url 'srs:dash_board' %}">ダッシュボード</a>
+    <a href="{% url 'srs:create_report' %}">レポート作成</a>
+    <a href="{% url 'srs:create_subject' %}">科目作成</a>
+</div>
+
 </body>
 </html>

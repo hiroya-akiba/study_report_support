@@ -44,7 +44,10 @@ Plotly.newPlot('myDiv', data, layout);
 // クリックイベントリスナー
 document.getElementById('myDiv').on('plotly_click', function(data){
     // クリックされたデータの取得
-    var point = data.points[0];
+    var point = data.points[0]; // points[0]で指定してしまうと、セグメントを分別することができなくなってしまう。
+    // なぜなら、points[1]に次のセグメント情報が入っているため。
+    // つまり、どのインデックスをクリックしたのか、という情報をリクエストパラメータ等から取得する必要がある。
+    // 例えば、座標情報など。
     
     // クリックされたセグメントの情報
     var xValue = point.x;  // カテゴリ（X軸の値）
@@ -64,11 +67,11 @@ document.getElementById('myDiv').on('plotly_click', function(data){
     };
 
     // 例: リクエスト送信（実際のAPIエンドポイントに応じて設定）
-    fetch('/your-api-endpoint', {
+    fetch('{% url "srs:exp" %}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': 'your-csrf-token'
+            'X-CSRFToken': '{{ csrf_token }}'
         },
         body: JSON.stringify(requestData)
     }).then(response => {

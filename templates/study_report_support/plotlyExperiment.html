@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stacked Bar Chart</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<div id="myDiv" style="width: 600px; height: 400px;"></div>
+
+<script>
+// データの定義
+var trace1 = {
+  x: ['Category A', 'Category B', 'Category C'],
+  y: [20, 14, 23],
+  name: 'Segment 1',
+  type: 'bar'
+};
+
+var trace2 = {
+  x: ['Category A', 'Category B', 'Category C'],
+  y: [12, 18, 29],
+  name: 'Segment 2',
+  type: 'bar'
+};
+
+var trace3 = {
+  x: ['Category A', 'Category B', 'Category C'],
+  y: [10, 8, 15],
+  name: 'Segment 3',
+  type: 'bar'
+};
+
+var data = [trace1, trace2, trace3];
+
+var layout = {
+  barmode: 'stack'
+};
+
+// グラフの描画
+Plotly.newPlot('myDiv', data, layout);
+
+// クリックイベントリスナー
+document.getElementById('myDiv').on('plotly_click', function(data){
+    // クリックされたデータの取得
+    var point = data.points[0];
+    
+    // クリックされたセグメントの情報
+    var xValue = point.x;  // カテゴリ（X軸の値）
+    var yValue = point.y;  // Y軸の値
+    var segment = point.data.name;  // セグメント名
+    
+    // ログで確認
+    console.log('Category:', xValue);
+    console.log('Value:', yValue);
+    console.log('Segment:', segment);
+    
+    // 条件に応じてリクエストを送信する
+    var requestData = {
+        category: xValue,
+        value: yValue,
+        segment: segment
+    };
+
+    // 例: リクエスト送信（実際のAPIエンドポイントに応じて設定）
+    fetch('/your-api-endpoint', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': 'your-csrf-token'
+        },
+        body: JSON.stringify(requestData)
+    }).then(response => {
+        return response.json();
+    }).then(data => {
+        console.log('Success:', data);
+    }).catch((error) => {
+        console.error('Error:', error);
+    });
+});
+</script>
+
+</body>
+</html>

@@ -9,7 +9,8 @@ from .models import Report, Subject
 from .forms import ReportForm, SubjectForm
 from .myplot import UsePlotly, UseMatplotlib
 
-
+import plotly.graph_objects as go
+from plotly.utils import PlotlyJSONEncoder
 
 class DashBoardView(TemplateView):
     """
@@ -17,9 +18,9 @@ class DashBoardView(TemplateView):
     """
     template_name = "study_report_support/dashboard.html"
     model = Report
-    #plot_obj = UsePlotly
-    plot_obj = UseMatplotlib()
-    plot_obj.create_graph()
+    plot_obj = UsePlotly
+    #plot_obj = UseMatplotlib()
+    #plot_obj.create_graph()
 
     def post(self, request):
         data = json.loads(request.body)
@@ -29,8 +30,8 @@ class DashBoardView(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['subject_list'] = Subject.objects.all
-        #context["plot"] = self.plot_obj.bar(7)
-        context["plot"] = self.plot_obj.get_image()
+        context["plot"] = self.plot_obj.bar(7)
+        #context["plot"] = self.plot_obj.get_image()
         return context
 
 
@@ -129,3 +130,35 @@ class ReportDeleteView(DeleteView):
             self.request, '「{}」を削除しました'.format(self.object)
         )
         return result
+
+
+class PlotlyExperimentView(ListView):
+    """
+    Plotlyの実験用ページ
+    """
+    template_name = "study_report_support/plotlyExperiment.html"
+    regions = ['North', 'South', 'East', 'West']
+    values = [20, 30, 15, 35]
+    model = Report
+    fig = go.Figure()
+    for region, value in zip(regions, values):
+        fig.add_trace(go.Bar(
+            y=['Total'],
+            x=[value],
+            name=region,
+            orientation='h',
+            hovertemplate=f"Region: {region}<br>Value: %{{x}}<extra></extra>"
+        ))
+    fig.update_layout(barmode='stack')
+    plot_json = json.dumps(fig, cls=PlotlyJSONEncoder)
+
+    def post(self, request):
+        data = json.loads(request.body)
+        print(f"Received data: {data}")
+        return JsonResponse({'status': 'success'})
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['plot_json'] = self.plot_json
+        return context
+    

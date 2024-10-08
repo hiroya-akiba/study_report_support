@@ -22,4 +22,8 @@ urlpatterns = [
     path('create_subject/',
         views.SubjectCreateView.as_view(),
         name='create_subject'),
+
+    path('exp/',
+         views.PlotlyExperimentView.as_view(),
+         name='exp'),
 ]

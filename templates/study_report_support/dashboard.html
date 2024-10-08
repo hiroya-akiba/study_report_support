@@ -8,9 +8,9 @@
 </head>
 <body>
 <h1>Dashboard</h1>
-<!--<div class="graph">{{plot|safe}}</div>-->
+<div id="plot" class="graph">{{plot|safe}}</div>
 
-<img id="plot" src="data:image/png;base64, {{ plot | safe }} " alt="matplotlib_plot" style="cursor: pointer;">
+<!--<img id="plot" src="data:image/png;base64, {{ plot | safe }} " alt="matplotlib_plot" style="cursor: pointer;">-->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const plot = document.getElementById('plot');
@@ -50,6 +50,7 @@
     <a href="{% url 'srs:dash_board' %}">ダッシュボード</a>
     <a href="{% url 'srs:create_report' %}">レポート作成</a>
     <a href="{% url 'srs:create_subject' %}">科目作成</a>
+    <a href="{% url 'srs:exp' %}">実験</a>
 </div>
 
 </body>
